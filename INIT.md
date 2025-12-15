@@ -131,15 +131,89 @@ split-ease/
 
 ---
 
-## Git Setup (Recommended)
+## Git Setup ✅
+
+### Repository Information
+- **GitHub Repository:** https://github.com/Shasha0072/split-ease
+- **Main Branch:** `main` (production-ready code)
+- **Development Branch:** `development` (active development)
+
+### Branching Strategy
+
+We follow a **Git Flow** approach:
+
+1. **`main` branch** - Production-ready, stable code
+   - Protected branch
+   - Only accepts PRs from `development` or hotfix branches
+   - Each merge represents a release
+
+2. **`development` branch** - Active development
+   - Base branch for all feature branches
+   - Integration branch for testing features together
+
+3. **Feature branches** - Individual features/fixes
+   - Format: `feature/feature-name` or `fix/bug-name`
+   - Branch from: `development`
+   - Merge into: `development` via Pull Request
+
+### Workflow for Each Feature
+
 ```bash
-git init
+# 1. Make sure you're on development and up to date
+git checkout development
+git pull origin development
+
+# 2. Create a new feature branch
+git checkout -b feature/database-schema
+# OR for fixes: git checkout -b fix/auth-bug
+
+# 3. Work on your feature, make commits
 git add .
-git commit -m "Initial commit: Project setup"
-git branch -M main
-git remote add origin [your-github-repo-url]
-git push -u origin main
+git commit -m "Add users table schema"
+
+# 4. Push feature branch to GitHub
+git push -u origin feature/database-schema
+
+# 5. Create Pull Request on GitHub
+# Go to: https://github.com/Shasha0072/split-ease/pulls
+# Click "New Pull Request"
+# Base: development <- Compare: feature/database-schema
+# Add description, review changes, create PR
+
+# 6. After PR is approved and merged, delete feature branch
+git checkout development
+git pull origin development
+git branch -d feature/database-schema
+
+# 7. Start next feature (repeat from step 2)
 ```
+
+### Commit Message Convention
+
+Format: `<type>: <description>`
+
+**Types:**
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation changes
+- `style:` Code style changes (formatting)
+- `refactor:` Code refactoring
+- `test:` Adding tests
+- `chore:` Maintenance tasks
+
+**Examples:**
+```bash
+git commit -m "feat: add user authentication with Supabase"
+git commit -m "fix: resolve balance calculation error"
+git commit -m "docs: update API documentation"
+```
+
+### Current Setup Status
+- [x] Repository created on GitHub
+- [x] Initial commit pushed to `main`
+- [x] `development` branch created and pushed
+- [x] Currently on `development` branch
+- [ ] Branch protection rules (optional, for later)
 
 ---
 
@@ -192,11 +266,13 @@ npm run lint
 ---
 
 ## Future Considerations
-- Set up GitHub repository
-- Configure Vercel deployment
-- Set up error monitoring (Sentry)
-- Configure analytics (optional)
-- Set up automated backups
+- [x] Set up GitHub repository
+- [ ] Set up branch protection rules for `main`
+- [ ] Configure Vercel deployment
+- [ ] Set up error monitoring (Sentry)
+- [ ] Configure analytics (optional)
+- [ ] Set up automated backups
+- [ ] Add GitHub Actions for CI/CD
 
 ---
 
