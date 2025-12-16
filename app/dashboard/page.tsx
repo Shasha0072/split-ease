@@ -1,6 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { signOut } from '@/lib/actions/auth'
+import { DashboardLayout } from '@/components/layout/dashboard-layout'
+import { MobileLayout } from '@/components/layout/mobile-layout'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
+import { SignOutButton } from './sign-out-button'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -13,82 +19,224 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
+  const userData = {
+    email: user.email,
+    name: user.user_metadata?.name || null,
+    avatar_url: user.user_metadata?.avatar_url || null,
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">SplitEase</h1>
+    <>
+      {/* Desktop Layout */}
+      <div className="hidden lg:block">
+        <DashboardLayout user={userData}>
+          <div className="space-y-6">
+            {/* Welcome Section */}
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome back!
+              </h1>
+              <p className="text-gray-600">
+                Here's an overview of your expenses and settlements
+              </p>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-700">
-                {user.email}
-              </span>
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition"
-                >
-                  Sign Out
-                </button>
-              </form>
+
+            {/* Balance Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card variant="elevated">
+                <CardHeader>
+                  <CardDescription>You Owe</CardDescription>
+                  <CardTitle className="text-danger text-3xl">₹0</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card variant="elevated">
+                <CardHeader>
+                  <CardDescription>You're Owed</CardDescription>
+                  <CardTitle className="text-success text-3xl">₹0</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card variant="elevated">
+                <CardHeader>
+                  <CardDescription>Net Balance</CardDescription>
+                  <CardTitle className="text-gray-900 text-3xl">₹0</CardTitle>
+                </CardHeader>
+              </Card>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardDescription>This Month</CardDescription>
+                  <CardTitle className="text-2xl">₹0</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardDescription>Your Share</CardDescription>
+                  <CardTitle className="text-2xl">₹0</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardDescription>Active Groups</CardDescription>
+                  <CardTitle className="text-2xl">0</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardDescription>Unsettled</CardDescription>
+                  <CardTitle className="text-2xl">0</CardTitle>
+                </CardHeader>
+              </Card>
+            </div>
+
+            {/* Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Groups</CardTitle>
+                  <CardDescription>
+                    Create and manage your expense groups
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Badge variant="outline">Coming Soon</Badge>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Expenses</CardTitle>
+                  <CardDescription>
+                    Track and split expenses with ease
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Badge variant="outline">Coming Soon</Badge>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Settlements</CardTitle>
+                  <CardDescription>
+                    Settle up with your flatmates
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Badge variant="outline">Coming Soon</Badge>
+                </CardContent>
+              </Card>
             </div>
           </div>
-        </div>
-      </nav>
+        </DashboardLayout>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Welcome to SplitEase!
-          </h2>
-          <p className="text-gray-600 mb-6">
-            You're successfully authenticated. The dashboard features are coming soon!
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Groups</h3>
-              <p className="text-sm text-gray-600">
-                Create and manage your expense groups
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        <MobileLayout>
+          <div className="space-y-4 p-4">
+            {/* Welcome Section */}
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                Welcome back!
+              </h1>
+              <p className="text-gray-600 text-sm">
+                Here's an overview of your expenses
               </p>
-              <span className="inline-block mt-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                Coming Soon
-              </span>
             </div>
 
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Expenses</h3>
-              <p className="text-sm text-gray-600">
-                Track and split expenses with ease
-              </p>
-              <span className="inline-block mt-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                Coming Soon
-              </span>
+            {/* Balance Summary - Mobile */}
+            <div className="grid grid-cols-2 gap-3">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardDescription className="text-xs">You Owe</CardDescription>
+                  <CardTitle className="text-danger text-2xl">₹0</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardDescription className="text-xs">You're Owed</CardDescription>
+                  <CardTitle className="text-success text-2xl">₹0</CardTitle>
+                </CardHeader>
+              </Card>
             </div>
 
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Settlements</h3>
-              <p className="text-sm text-gray-600">
-                Settle up with your flatmates
-              </p>
-              <span className="inline-block mt-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                Coming Soon
-              </span>
+            {/* Quick Actions */}
+            <div className="flex gap-3">
+              <Link href="/expenses/new" className="flex-1">
+                <Button className="w-full" size="lg">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Expense
+                </Button>
+              </Link>
+              <Link href="/settle" className="flex-1">
+                <Button variant="outline" className="w-full" size="lg">
+                  Settle Up
+                </Button>
+              </Link>
+            </div>
+
+            {/* Quick Stats - Mobile */}
+            <div className="grid grid-cols-2 gap-3">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs">This Month</CardDescription>
+                  <CardTitle className="text-lg">₹0</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription className="text-xs">Groups</CardDescription>
+                  <CardTitle className="text-lg">0</CardTitle>
+                </CardHeader>
+              </Card>
+            </div>
+
+            {/* Feature Cards - Mobile */}
+            <div className="space-y-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Groups</CardTitle>
+                  <CardDescription className="text-sm">
+                    Create and manage your expense groups
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Badge variant="outline" size="sm">Coming Soon</Badge>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Expenses</CardTitle>
+                  <CardDescription className="text-sm">
+                    Track and split expenses with ease
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Badge variant="outline" size="sm">Coming Soon</Badge>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Settlements</CardTitle>
+                  <CardDescription className="text-sm">
+                    Settle up with your flatmates
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Badge variant="outline" size="sm">Coming Soon</Badge>
+                </CardContent>
+              </Card>
             </div>
           </div>
-
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-semibold text-blue-900 mb-2">User Info</h4>
-            <div className="text-sm text-blue-800">
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>User ID:</strong> {user.id}</p>
-              <p><strong>Signed up:</strong> {new Date(user.created_at!).toLocaleDateString()}</p>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+        </MobileLayout>
+      </div>
+    </>
   )
 }
