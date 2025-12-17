@@ -245,6 +245,9 @@ export async function getGroupBalances(groupId: string) {
       const user1 = userMap.get(user1Id)
       const user2 = userMap.get(user2Id)
 
+      // Skip if either user is missing
+      if (!user1 || !user2) return null
+
       // Determine who owes whom
       const owesUser = amount > 0 ? user1 : user2
       const owedUser = amount > 0 ? user2 : user1
@@ -255,6 +258,7 @@ export async function getGroupBalances(groupId: string) {
         amount: Math.abs(amount),
       }
     })
+    .filter((balance): balance is NonNullable<typeof balance> => balance !== null)
     .sort((a, b) => b.amount - a.amount)
 
   return { balances, error: null }
