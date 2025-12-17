@@ -243,7 +243,7 @@ export async function acceptInvite(inviteCode: string) {
   // Find invite by code
   const { data: invite, error: inviteError } = await supabase
     .from('group_invites')
-    .select('id, group_id, is_active, expires_at')
+    .select('id, group_id, is_active, expires_at, current_uses')
     .eq('invite_code', inviteCode)
     .eq('is_active', true)
     .gt('expires_at', new Date().toISOString())
@@ -278,10 +278,11 @@ export async function acceptInvite(inviteCode: string) {
     return { error: memberError.message }
   }
 
-  // Increment current_uses
+  // Increment current_uses (handle null case)
+  const currentUses = invite.current_uses ?? 0
   const { error: updateError } = await supabase
     .from('group_invites')
-    .update({ current_uses: (invite as any).current_uses + 1 })
+    .update({ current_uses: currentUses + 1 })
     .eq('id', invite.id)
 
   if (updateError) {
@@ -296,6 +297,7 @@ export async function acceptInvite(inviteCode: string) {
     description: `${user.user_metadata?.name || user.email} joined the group via invite`,
   })
 
-  revalidatePath(`/groups/${invite.group_id}`)
+  // Don't use revalidatePath here - it causes errors in server components
+  // The redirect will handle the navigation
   return { success: true, groupId: invite.group_id }
 }

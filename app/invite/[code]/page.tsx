@@ -8,8 +8,9 @@ import Link from 'next/link'
 export default async function InviteAcceptPage({
   params,
 }: {
-  params: { code: string }
+  params: Promise<{ code: string }>
 }) {
+  const { code } = await params
   const supabase = await createClient()
   const {
     data: { user },
@@ -19,7 +20,7 @@ export default async function InviteAcceptPage({
   const { data: invite, error: fetchError } = await supabase
     .from('group_invites')
     .select('*, groups(id, name, type)')
-    .eq('invite_code', params.code)
+    .eq('invite_code', code)
     .eq('is_active', true)
     .gt('expires_at', new Date().toISOString())
     .single()
@@ -53,11 +54,11 @@ export default async function InviteAcceptPage({
 
   // Not logged in - redirect to login with return URL
   if (!user) {
-    redirect(`/login?redirect=/invite/${params.code}`)
+    redirect(`/login?redirect=/invite/${code}`)
   }
 
   // User is logged in - attempt to join group
-  const result = await acceptInvite(params.code)
+  const result = await acceptInvite(code)
 
   if (result?.error) {
     // Already a member - redirect to group
