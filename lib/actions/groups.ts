@@ -15,6 +15,24 @@ export async function createGroup(formData: FormData) {
     return { error: 'Not authenticated' }
   }
 
+  // Ensure user exists in users table
+  const { error: userError } = await supabase
+    .from('users')
+    .upsert({
+      id: user.id,
+      email: user.email!,
+      name: user.user_metadata?.name || user.user_metadata?.full_name || null,
+      phone: user.user_metadata?.phone || user.phone || null,
+      avatar_url: user.user_metadata?.avatar_url || null,
+    }, {
+      onConflict: 'id',
+      ignoreDuplicates: false,
+    })
+
+  if (userError) {
+    console.error('Error ensuring user exists:', userError)
+  }
+
   const name = formData.get('name') as string
   const type = formData.get('type') as 'household' | 'trip' | 'event'
   const description = formData.get('description') as string | null
@@ -55,7 +73,7 @@ export async function createGroup(formData: FormData) {
   })
 
   revalidatePath('/groups')
-  redirect(`/groups/${group.id}`)
+  redirect('/groups')
 }
 
 export async function getGroups() {
@@ -68,6 +86,20 @@ export async function getGroups() {
   if (!user) {
     return { error: 'Not authenticated', groups: [] }
   }
+
+  // Ensure user exists in users table
+  await supabase
+    .from('users')
+    .upsert({
+      id: user.id,
+      email: user.email!,
+      name: user.user_metadata?.name || user.user_metadata?.full_name || null,
+      phone: user.user_metadata?.phone || user.phone || null,
+      avatar_url: user.user_metadata?.avatar_url || null,
+    }, {
+      onConflict: 'id',
+      ignoreDuplicates: false,
+    })
 
   // Get all groups where user is a member
   const { data: memberGroups, error } = await supabase
