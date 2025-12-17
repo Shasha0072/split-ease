@@ -458,7 +458,7 @@ npm run lint
 **📊 Database Migrations:**
 - `20241216000003_add_split_type_to_expenses.sql`
 
-**🔗 Pull Request:** #8 (In Review)
+**🔗 Pull Request:** #8 (Merged to development)
 
 **📝 Notes:**
 - Equal split calculation working correctly
@@ -494,7 +494,6 @@ npm run lint
 
 **Project Status:** 🚧 In Active Development
 **Current Branch:** `development`
-**Total PRs Merged:** 5
-**Total PRs In Review:** 1 (PR #8)
+**Total PRs Merged:** 6
 **Week 1 Progress:** 7/7 tasks completed (100%) ✅
 **Last Updated:** December 17, 2024
