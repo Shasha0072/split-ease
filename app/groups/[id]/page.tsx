@@ -11,7 +11,8 @@ import { Avatar } from '@/components/ui/avatar'
 import { InviteSection } from '@/components/features/groups/invite-section'
 import Link from 'next/link'
 
-export default async function GroupDetailPage({ params }: { params: { id: string } }) {
+export default async function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createClient()
 
   const {
@@ -28,9 +29,9 @@ export default async function GroupDetailPage({ params }: { params: { id: string
     avatar_url: user.user_metadata?.avatar_url || null,
   }
 
-  const { group, error: groupError } = await getGroup(params.id)
-  const { expenses } = await getGroupExpenses(params.id)
-  const { balances } = await getGroupBalances(params.id)
+  const { group, error: groupError } = await getGroup(id)
+  const { expenses } = await getGroupExpenses(id)
+  const { balances } = await getGroupBalances(id)
 
   // Fetch group members
   const { data: membersData } = await supabase
@@ -42,7 +43,7 @@ export default async function GroupDetailPage({ params }: { params: { id: string
       user_id,
       user:users!group_members_user_id_fkey(id, name, email, avatar_url)
     `)
-    .eq('group_id', params.id)
+    .eq('group_id', id)
     .order('joined_at', { ascending: true })
 
   // Transform to ensure user is always an object
@@ -109,7 +110,7 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                   <p className="text-gray-600 mt-2">{group.description}</p>
                 )}
               </div>
-              <Link href={`/groups/${params.id}/expenses/new`}>
+              <Link href={`/groups/${id}/expenses/new`}>
                 <Button size="lg">
                   <svg
                     className="w-5 h-5 mr-2"
@@ -221,7 +222,7 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                 {/* Invite Section - Admin Only */}
                 {isAdmin && (
                   <div className="mt-6">
-                    <InviteSection groupId={params.id} isAdmin={isAdmin} />
+                    <InviteSection groupId={id} isAdmin={isAdmin} />
                   </div>
                 )}
               </div>
@@ -255,7 +256,7 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                         <p className="text-gray-600 mb-6">
                           Start by adding your first expense to track group spending
                         </p>
-                        <Link href={`/groups/${params.id}/expenses/new`}>
+                        <Link href={`/groups/${id}/expenses/new`}>
                           <Button size="lg">Add First Expense</Button>
                         </Link>
                       </div>
@@ -351,7 +352,7 @@ export default async function GroupDetailPage({ params }: { params: { id: string
             </div>
 
             {/* Add Expense Button */}
-            <Link href={`/groups/${params.id}/expenses/new`}>
+            <Link href={`/groups/${id}/expenses/new`}>
               <Button className="w-full" size="lg">
                 <svg
                   className="w-5 h-5 mr-2"
@@ -444,7 +445,7 @@ export default async function GroupDetailPage({ params }: { params: { id: string
 
             {/* Invite Section - Admin Only */}
             {isAdmin && (
-              <InviteSection groupId={params.id} isAdmin={isAdmin} />
+              <InviteSection groupId={id} isAdmin={isAdmin} />
             )}
 
             {/* Expenses */}
@@ -458,7 +459,7 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                     <p className="text-sm text-gray-600 mb-4">
                       No expenses yet
                     </p>
-                    <Link href={`/groups/${params.id}/expenses/new`}>
+                    <Link href={`/groups/${id}/expenses/new`}>
                       <Button>Add First Expense</Button>
                     </Link>
                   </div>

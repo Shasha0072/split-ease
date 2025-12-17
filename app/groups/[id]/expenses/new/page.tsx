@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ExpenseForm } from '@/components/features/expenses/expense-form'
 import Link from 'next/link'
 
-export default async function NewExpensePage({ params }: { params: { id: string } }) {
+export default async function NewExpensePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createClient()
 
   const {
@@ -24,7 +25,7 @@ export default async function NewExpensePage({ params }: { params: { id: string 
     avatar_url: user.user_metadata?.avatar_url || null,
   }
 
-  const { group, error: groupError } = await getGroup(params.id)
+  const { group, error: groupError } = await getGroup(id)
 
   if (groupError || !group) {
     redirect('/groups')
@@ -39,7 +40,7 @@ export default async function NewExpensePage({ params }: { params: { id: string 
             {/* Header */}
             <div>
               <Link
-                href={`/groups/${params.id}`}
+                href={`/groups/${id}`}
                 className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
               >
                 <svg
@@ -71,7 +72,7 @@ export default async function NewExpensePage({ params }: { params: { id: string 
                 <CardTitle>Expense Details</CardTitle>
               </CardHeader>
               <CardContent>
-                <ExpenseForm groupId={params.id} />
+                <ExpenseForm groupId={id} />
               </CardContent>
             </Card>
           </div>
@@ -85,7 +86,7 @@ export default async function NewExpensePage({ params }: { params: { id: string 
             {/* Header */}
             <div>
               <Link
-                href={`/groups/${params.id}`}
+                href={`/groups/${id}`}
                 className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-3"
               >
                 <svg
@@ -117,7 +118,7 @@ export default async function NewExpensePage({ params }: { params: { id: string 
                 <CardTitle className="text-base">Expense Details</CardTitle>
               </CardHeader>
               <CardContent>
-                <ExpenseForm groupId={params.id} />
+                <ExpenseForm groupId={id} />
               </CardContent>
             </Card>
           </div>
