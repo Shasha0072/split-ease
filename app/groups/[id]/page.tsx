@@ -33,19 +33,26 @@ export default async function GroupDetailPage({ params }: { params: { id: string
   const { balances } = await getGroupBalances(params.id)
 
   // Fetch group members
-  const { data: members } = await supabase
+  const { data: membersData } = await supabase
     .from('group_members')
     .select(`
       id,
       role,
       joined_at,
-      user:users(id, name, email, avatar_url)
+      user_id,
+      user:users!group_members_user_id_fkey(id, name, email, avatar_url)
     `)
     .eq('group_id', params.id)
     .order('joined_at', { ascending: true })
 
+  // Transform to ensure user is always an object
+  const members = membersData?.map((member: any) => ({
+    ...member,
+    user: Array.isArray(member.user) ? member.user[0] : member.user
+  }))
+
   // Get current user's role
-  const currentUserMembership = members?.find((m: any) => m.user.id === user.id)
+  const currentUserMembership = members?.find((m: any) => m.user?.id === user.id)
   const isAdmin = currentUserMembership?.role === 'admin'
 
   if (groupError || !group) {
@@ -186,24 +193,26 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                   <CardContent>
                     <div className="space-y-2">
                       {members?.map((member: any) => (
-                        <div key={member.id} className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar
-                              src={member.user.avatar_url}
-                              alt={member.user.name || member.user.email}
-                              size="sm"
-                            />
-                            <div>
-                              <p className="font-medium text-sm">{member.user.name || member.user.email}</p>
-                              <p className="text-xs text-gray-500">
-                                Joined {new Date(member.joined_at).toLocaleDateString()}
-                              </p>
+                        member.user && (
+                          <div key={member.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Avatar
+                                src={member.user.avatar_url}
+                                alt={member.user.name || member.user.email}
+                                size="sm"
+                              />
+                              <div>
+                                <p className="font-medium text-sm">{member.user.name || member.user.email}</p>
+                                <p className="text-xs text-gray-500">
+                                  Joined {new Date(member.joined_at).toLocaleDateString()}
+                                </p>
+                              </div>
                             </div>
+                            {member.role === 'admin' && (
+                              <Badge variant="outline" size="sm">Admin</Badge>
+                            )}
                           </div>
-                          {member.role === 'admin' && (
-                            <Badge variant="outline" size="sm">Admin</Badge>
-                          )}
-                        </div>
+                        )
                       ))}
                     </div>
                   </CardContent>
@@ -408,24 +417,26 @@ export default async function GroupDetailPage({ params }: { params: { id: string
               <CardContent>
                 <div className="space-y-2">
                   {members?.map((member: any) => (
-                    <div key={member.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Avatar
-                          src={member.user.avatar_url}
-                          alt={member.user.name || member.user.email}
-                          size="sm"
-                        />
-                        <div>
-                          <p className="font-medium text-sm">{member.user.name || member.user.email}</p>
-                          <p className="text-xs text-gray-500">
-                            Joined {new Date(member.joined_at).toLocaleDateString()}
-                          </p>
+                    member.user && (
+                      <div key={member.id} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Avatar
+                            src={member.user.avatar_url}
+                            alt={member.user.name || member.user.email}
+                            size="sm"
+                          />
+                          <div>
+                            <p className="font-medium text-sm">{member.user.name || member.user.email}</p>
+                            <p className="text-xs text-gray-500">
+                              Joined {new Date(member.joined_at).toLocaleDateString()}
+                            </p>
+                          </div>
                         </div>
+                        {member.role === 'admin' && (
+                          <Badge variant="outline" size="sm">Admin</Badge>
+                        )}
                       </div>
-                      {member.role === 'admin' && (
-                        <Badge variant="outline" size="sm">Admin</Badge>
-                      )}
-                    </div>
+                    )
                   ))}
                 </div>
               </CardContent>
