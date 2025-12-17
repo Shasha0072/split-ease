@@ -108,6 +108,8 @@ split-ease/
 - [ ] Expense list with filters
 - [ ] Edit/delete expenses
 - [ ] Expense categories
+- [ ] Custom split types (exact amount, percentage, shares)
+- [ ] Select specific members for splits
 - [ ] Settlement flow
 - [ ] Balance display on dashboard
 - [ ] Recent activity feed
@@ -128,6 +130,49 @@ split-ease/
 - [ ] Archive groups
 - [ ] Desktop dashboard optimization
 - [ ] Mobile responsive refinements
+
+---
+
+## Expense Split Types (Phased Implementation)
+
+### Phase 1: Equal Split (Week 1) ✅ Planned
+The simplest split method - divides expense equally among all group members.
+
+**Example:** ₹300 expense with 3 members = ₹100 per person
+
+**Features:**
+- Automatic equal division
+- All group members included by default
+- Simple UI - just amount and description
+- Perfect for shared household expenses
+
+### Phase 2: Custom Splits (Week 2+)
+Advanced split methods for complex expense scenarios.
+
+#### 1. Exact Amount Split
+Manually specify exact amount for each person.
+- **Use case:** Unequal purchases (e.g., different items in a bill)
+- **Example:** Total ₹300 → Person A: ₹150, Person B: ₹100, Person C: ₹50
+
+#### 2. Percentage Split
+Split by percentage distribution.
+- **Use case:** Income-based splits, proportional contributions
+- **Example:** Total ₹300 → Person A: 50% (₹150), Person B: 30% (₹90), Person C: 20% (₹60)
+
+#### 3. Shares/Ratio Split
+Split by ratio or shares.
+- **Use case:** Different consumption levels
+- **Example:** Total ₹300 → Person A: 2 shares (₹150), Person B: 1 share (₹75), Person C: 1 share (₹75)
+
+#### 4. Select Specific Members
+Choose which group members to include in split.
+- **Use case:** Not everyone participated in the expense
+- **Example:** Only 2 out of 5 group members went shopping
+
+**Implementation Priority:**
+1. Equal split (Week 1)
+2. Exact amount + Member selection (Week 2)
+3. Percentage + Shares (Week 2-3)
 
 ---
 
