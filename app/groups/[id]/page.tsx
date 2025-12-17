@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar } from '@/components/ui/avatar'
+import { InviteSection } from '@/components/features/groups/invite-section'
 import Link from 'next/link'
 
 export default async function GroupDetailPage({ params }: { params: { id: string } }) {
@@ -30,6 +31,22 @@ export default async function GroupDetailPage({ params }: { params: { id: string
   const { group, error: groupError } = await getGroup(params.id)
   const { expenses } = await getGroupExpenses(params.id)
   const { balances } = await getGroupBalances(params.id)
+
+  // Fetch group members
+  const { data: members } = await supabase
+    .from('group_members')
+    .select(`
+      id,
+      role,
+      joined_at,
+      user:users(id, name, email, avatar_url)
+    `)
+    .eq('group_id', params.id)
+    .order('joined_at', { ascending: true })
+
+  // Get current user's role
+  const currentUserMembership = members?.find((m: any) => m.user.id === user.id)
+  const isAdmin = currentUserMembership?.role === 'admin'
 
   if (groupError || !group) {
     redirect('/groups')
@@ -159,6 +176,45 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                     )}
                   </CardContent>
                 </Card>
+
+                {/* Members Section */}
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle>Members ({members?.length || 0})</CardTitle>
+                    <CardDescription>Group members</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {members?.map((member: any) => (
+                        <div key={member.id} className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Avatar
+                              src={member.user.avatar_url}
+                              alt={member.user.name || member.user.email}
+                              size="sm"
+                            />
+                            <div>
+                              <p className="font-medium text-sm">{member.user.name || member.user.email}</p>
+                              <p className="text-xs text-gray-500">
+                                Joined {new Date(member.joined_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          {member.role === 'admin' && (
+                            <Badge variant="outline" size="sm">Admin</Badge>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Invite Section - Admin Only */}
+                {isAdmin && (
+                  <div className="mt-6">
+                    <InviteSection groupId={params.id} isAdmin={isAdmin} />
+                  </div>
+                )}
               </div>
 
               {/* Expenses Section */}
@@ -343,6 +399,42 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                 )}
               </CardContent>
             </Card>
+
+            {/* Members */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Members ({members?.length || 0})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {members?.map((member: any) => (
+                    <div key={member.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Avatar
+                          src={member.user.avatar_url}
+                          alt={member.user.name || member.user.email}
+                          size="sm"
+                        />
+                        <div>
+                          <p className="font-medium text-sm">{member.user.name || member.user.email}</p>
+                          <p className="text-xs text-gray-500">
+                            Joined {new Date(member.joined_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      {member.role === 'admin' && (
+                        <Badge variant="outline" size="sm">Admin</Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Invite Section - Admin Only */}
+            {isAdmin && (
+              <InviteSection groupId={params.id} isAdmin={isAdmin} />
+            )}
 
             {/* Expenses */}
             <Card>
