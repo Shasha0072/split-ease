@@ -95,10 +95,10 @@ split-ease/
 - [x] Configure authentication middleware
 - [x] Create landing page
 
-### 📋 Week 1: Foundation
-- [ ] Database schema creation
-- [ ] Authentication setup (email/password + Google OAuth)
-- [ ] Protected routes middleware
+### 🚧 Week 1: Foundation (IN PROGRESS)
+- [x] Database schema creation ✅ (PR #3 - Merged)
+- [x] Authentication setup (email/password + Google OAuth) ✅ (PR #4 - Merged)
+- [x] Protected routes middleware ✅
 - [ ] Basic UI layout (mobile + desktop)
 - [ ] Group creation and management
 - [ ] Add/view expenses (equal split only)
@@ -246,14 +246,80 @@ npm run lint
 
 ---
 
-## Notes & Decisions Log
+## Development Progress Log
 
-### December 15, 2024
-- Project initialized
-- Supabase account created
-- Project name: Split-Ease
-- Starting with Week 1 foundation features
-- Will build incrementally, one feature at a time for learning
+### December 15, 2024 - Session 1: Project Setup
+**✅ Completed:**
+- Project initialized with Next.js 15, TypeScript, Tailwind CSS
+- Supabase account created (Project: Split-Ease)
+- GitHub repository created: https://github.com/Shasha0072/split-ease
+- Git workflow established (main → development → feature branches)
+- Environment variables configured
+- Development server running successfully
+
+**📝 Decisions Made:**
+- Using Git Flow branching strategy
+- Feature branches with Pull Requests for all changes
+- Commit message convention: `<type>: <description>`
+- Building incrementally, one feature at a time
+
+### December 15, 2024 - Session 2: Database Schema (PR #3)
+**✅ Completed:**
+- Created complete database schema with 13 tables
+- Implemented Row Level Security (RLS) policies
+- Added performance indexes
+- Created TypeScript type definitions
+- Documentation: `supabase/README.md`
+
+**📊 Tables Created:**
+1. users - User profiles
+2. groups - Expense groups
+3. group_members - User-group relationships
+4. expenses - Expense tracking
+5. expense_splits - Split calculations
+6. settlements - Payment records
+7. expense_history - Audit trail
+8. activity_feed - Real-time activity
+9. notifications - User notifications
+10. group_invites - Invite system
+11. user_preferences - User settings
+12. monthly_expense_summary - Analytics
+13. balance_snapshots - Balance tracking
+
+**🔗 Pull Request:** #3 (Merged to development)
+
+### December 15, 2024 - Session 3: Authentication System (PR #4)
+**✅ Completed:**
+- Email/password authentication
+- Google OAuth integration (code ready, needs config)
+- Login, Signup, Password Reset pages
+- Protected dashboard placeholder
+- Server actions for auth operations
+- OAuth callback handler
+- Documentation: `docs/GOOGLE_OAUTH_SETUP.md`
+
+**📄 Pages Created:**
+- `/` - Landing page with auth links
+- `/login` - Sign in page
+- `/signup` - Create account page
+- `/reset-password` - Request password reset
+- `/reset-password/confirm` - Set new password
+- `/dashboard` - Protected dashboard (placeholder)
+
+**🔐 Server Actions:**
+- `login()` - Email/password sign in
+- `signup()` - User registration
+- `signOut()` - Sign out
+- `resetPassword()` - Send reset email
+- `updatePassword()` - Update password
+- `signInWithGoogle()` - Google OAuth
+
+**🔗 Pull Request:** #4 (Merged to development)
+
+**📝 Notes:**
+- Google OAuth requires configuration in Supabase dashboard
+- See `docs/GOOGLE_OAUTH_SETUP.md` for setup guide
+- Server running on http://localhost:3003
 
 ---
 
@@ -276,4 +342,12 @@ npm run lint
 
 ---
 
+---
+
+## Quick Stats
+
+**Project Status:** 🚧 In Active Development
+**Current Branch:** `development`
+**Total PRs Merged:** 4
+**Week 1 Progress:** 3/7 tasks completed (43%)
 **Last Updated:** December 15, 2024
