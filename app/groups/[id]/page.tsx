@@ -217,16 +217,18 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                                     {new Date(expense.date).toLocaleDateString()}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <Avatar
-                                    src={expense.paidBy.avatar_url}
-                                    alt={expense.paidBy.name || expense.paidBy.email}
-                                    size="xs"
-                                  />
-                                  <span className="text-xs text-gray-600">
-                                    Paid by {expense.paidBy.name || expense.paidBy.email}
-                                  </span>
-                                </div>
+                                {expense.paidBy && (
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Avatar
+                                      src={expense.paidBy.avatar_url}
+                                      alt={expense.paidBy.name || expense.paidBy.email}
+                                      size="xs"
+                                    />
+                                    <span className="text-xs text-gray-600">
+                                      Paid by {expense.paidBy.name || expense.paidBy.email}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                               <div className="text-right">
                                 <p className="text-lg font-bold text-gray-900">
@@ -376,16 +378,18 @@ export default async function GroupDetailPage({ params }: { params: { id: string
                             {new Date(expense.date).toLocaleDateString()}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Avatar
-                            src={expense.paidBy.avatar_url}
-                            alt={expense.paidBy.name || expense.paidBy.email}
-                            size="xs"
-                          />
-                          <span className="text-xs text-gray-600">
-                            Paid by {expense.paidBy.name || expense.paidBy.email}
-                          </span>
-                        </div>
+                        {expense.paidBy && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <Avatar
+                              src={expense.paidBy.avatar_url}
+                              alt={expense.paidBy.name || expense.paidBy.email}
+                              size="xs"
+                            />
+                            <span className="text-xs text-gray-600">
+                              Paid by {expense.paidBy.name || expense.paidBy.email}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

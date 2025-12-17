@@ -136,7 +136,7 @@ export async function getGroupExpenses(groupId: string) {
     .from('expenses')
     .select(`
       *,
-      paidBy:paid_by_user_id (
+      paidBy:users!expenses_paid_by_user_id_fkey (
         id,
         name,
         email,
@@ -151,7 +151,13 @@ export async function getGroupExpenses(groupId: string) {
     return { error: error.message, expenses: [] }
   }
 
-  return { expenses: expenses || [], error: null }
+  // Transform the data to ensure paidBy is always an object
+  const transformedExpenses = expenses?.map((expense: any) => ({
+    ...expense,
+    paidBy: Array.isArray(expense.paidBy) ? expense.paidBy[0] : expense.paidBy
+  })) || []
+
+  return { expenses: transformedExpenses, error: null }
 }
 
 export async function getGroupBalances(groupId: string) {
