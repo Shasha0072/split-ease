@@ -95,14 +95,14 @@ split-ease/
 - [x] Configure authentication middleware
 - [x] Create landing page
 
-### 🚧 Week 1: Foundation (IN PROGRESS)
+### ✅ Week 1: Foundation (COMPLETED)
 - [x] Database schema creation ✅ (PR #3 - Merged)
 - [x] Authentication setup (email/password + Google OAuth) ✅ (PR #4 - Merged)
 - [x] Protected routes middleware ✅
 - [x] Basic UI layout (mobile + desktop) ✅ (PR #5 - Merged)
 - [x] Group creation and management (Phase 1) ✅ (PR #5 - Merged)
-- [ ] Add/view expenses (equal split only)
-- [ ] Basic balance calculation
+- [x] Add/view expenses (equal split only) ✅ (PR #8 - In Review)
+- [x] Basic balance calculation ✅ (PR #8 - In Review)
 
 ### 📋 Week 2: Core Features
 - [ ] Expense list with filters
@@ -418,6 +418,55 @@ npm run lint
 - RLS policies properly configured
 - Ready for expense management next
 
+### December 17, 2024 - Session 5: Expense Management (PR #8)
+**✅ Completed:**
+- Implemented expense creation and viewing (equal split)
+- Built balance calculation system
+- Created expense form with categories
+- Added expense list to group detail page
+- Fixed database schema and RLS issues
+- Tested multi-user scenarios
+
+**💰 Expense Features:**
+- Add expense with description, amount, category, date
+- Equal split calculation across all group members
+- Balance calculation (who owes whom)
+- Expense list with payer information
+- Category badges and date display
+- Responsive mobile/desktop layouts
+
+**📄 Pages Created:**
+- `/groups/[id]` - Enhanced with expenses list and balances
+- `/groups/[id]/expenses/new` - Add expense form
+
+**🔧 Server Actions:**
+- `createExpense()` - Create expense and calculate splits
+- `getGroupExpenses()` - Fetch expenses with payer info
+- `getGroupBalances()` - Calculate who owes whom
+
+**🎨 UI Components Enhanced:**
+- ExpenseForm - Form with category dropdown and info box
+- Badge component - Added to display categories
+- Group detail page - Added expenses and balances sections
+
+**🐛 Fixes Applied:**
+1. Added split_type column to expenses table
+2. Fixed balance calculation for single-user groups
+3. Fixed expense paidBy data fetching with proper foreign key syntax
+4. Added null safety checks for multi-user scenarios
+
+**📊 Database Migrations:**
+- `20241216000003_add_split_type_to_expenses.sql`
+
+**🔗 Pull Request:** #8 (In Review)
+
+**📝 Notes:**
+- Equal split calculation working correctly
+- Multi-user testing completed successfully
+- Balance display shows "All settled up!" when no debts
+- Member invitation feature not yet implemented (manual SQL required)
+- Ready for merge to development
+
 ---
 
 ## Environment Variables Checklist
@@ -446,5 +495,6 @@ npm run lint
 **Project Status:** 🚧 In Active Development
 **Current Branch:** `development`
 **Total PRs Merged:** 5
-**Week 1 Progress:** 5/7 tasks completed (71%)
-**Last Updated:** December 16, 2024
+**Total PRs In Review:** 1 (PR #8)
+**Week 1 Progress:** 7/7 tasks completed (100%) ✅
+**Last Updated:** December 17, 2024
