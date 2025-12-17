@@ -99,8 +99,8 @@ split-ease/
 - [x] Database schema creation ✅ (PR #3 - Merged)
 - [x] Authentication setup (email/password + Google OAuth) ✅ (PR #4 - Merged)
 - [x] Protected routes middleware ✅
-- [ ] Basic UI layout (mobile + desktop)
-- [ ] Group creation and management
+- [x] Basic UI layout (mobile + desktop) ✅ (PR #5 - Merged)
+- [x] Group creation and management (Phase 1) ✅ (PR #5 - Merged)
 - [ ] Add/view expenses (equal split only)
 - [ ] Basic balance calculation
 
@@ -321,6 +321,58 @@ npm run lint
 - See `docs/GOOGLE_OAUTH_SETUP.md` for setup guide
 - Server running on http://localhost:3003
 
+### December 16, 2024 - Session 4: UI Components & Group Management (PR #5)
+**✅ Completed:**
+- Created complete UI component library
+- Built responsive layouts (desktop + mobile)
+- Implemented Group Management Phase 1
+- Fixed RLS policies for group operations
+- Tested group creation and listing
+
+**🎨 UI Components Created:**
+- Button, Card, Input, Alert, Badge, Avatar
+- AuthLayout, DashboardLayout, MobileLayout
+- Improved landing page with gradients
+- Enhanced dashboard with proper layouts
+
+**👥 Group Management Features:**
+- Create groups (household/trip/event types)
+- List all user's groups
+- Server actions for CRUD operations
+- Automatic user record creation
+- Activity feed integration
+
+**📄 Pages Created:**
+- `/groups` - List all groups (grid/card layout)
+- `/groups/new` - Create new group form
+- Enhanced `/dashboard` with mobile/desktop layouts
+
+**🔧 Server Actions:**
+- `createGroup()` - Create group and add creator as admin
+- `getGroups()` - Fetch all user's groups
+- `getGroup()` - Fetch single group details
+- `updateGroup()` - Update group (admin only)
+- `archiveGroup()` - Archive group (admin only)
+
+**🐛 Fixes Applied:**
+- Fixed infinite recursion in `group_members` RLS policies
+- Fixed `groups` RLS policies for proper access control
+- Resolved foreign key constraint issues
+- Added user upsert to ensure user exists before operations
+
+**📊 Database Migrations:**
+- `20241216000000_fix_rls_recursion.sql`
+- `20241216000001_fix_rls_properly.sql`
+- `20241216000002_fix_groups_rls.sql`
+
+**🔗 Pull Request:** #5 (Merged to development)
+
+**📝 Notes:**
+- Group creation tested and working
+- Mobile responsive layouts verified
+- RLS policies properly configured
+- Ready for expense management next
+
 ---
 
 ## Environment Variables Checklist
@@ -348,6 +400,6 @@ npm run lint
 
 **Project Status:** 🚧 In Active Development
 **Current Branch:** `development`
-**Total PRs Merged:** 4
-**Week 1 Progress:** 3/7 tasks completed (43%)
-**Last Updated:** December 15, 2024
+**Total PRs Merged:** 5
+**Week 1 Progress:** 5/7 tasks completed (71%)
+**Last Updated:** December 16, 2024
