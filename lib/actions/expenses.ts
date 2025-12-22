@@ -333,10 +333,14 @@ export async function updateExpense(expenseId: string, formData: FormData) {
     const splitAmount = amount / members.length
 
     // Delete old splits
-    await supabase
+    const { error: deleteError } = await supabase
       .from('expense_splits')
       .delete()
       .eq('expense_id', expenseId)
+
+    if (deleteError) {
+      return { error: deleteError.message }
+    }
 
     // Create new splits
     const splits = members.map((member) => ({
