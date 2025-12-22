@@ -115,12 +115,14 @@ split-ease/
 - [ ] Recent activity feed
 - [ ] In-app notifications
 
+### 📋 Week 2 (Continued): Member Management
+- [x] Invite system ✅ (Session 6 - Complete)
+
 ### 📋 Week 3: Enhancements
 - [ ] Email notifications
 - [ ] WhatsApp share functionality
 - [ ] Settlement history
 - [ ] Activity feed with filters
-- [ ] Invite system
 - [ ] User preferences
 
 ### 📋 Week 4: Analytics & Polish
@@ -464,8 +466,50 @@ npm run lint
 - Equal split calculation working correctly
 - Multi-user testing completed successfully
 - Balance display shows "All settled up!" when no debts
-- Member invitation feature not yet implemented (manual SQL required)
-- Ready for merge to development
+
+### December 22, 2024 - Session 6: Member Invitation System
+**✅ Completed:**
+- Implemented shareable invite link system
+- Added member management to groups
+- Created invite acceptance flow
+- Fixed Next.js 15 compatibility issues
+
+**🔗 Invite System Features:**
+- Generate shareable invite links (admin only)
+- Unlimited uses per invite link
+- Never-expiring invites (can be manually deactivated)
+- Copy-to-clipboard functionality
+- Track invite usage count
+- Public invite acceptance page
+
+**📄 Pages Created:**
+- `/invite/[code]` - Public invite acceptance page
+
+**🔧 Server Actions:**
+- `createInvite()` - Generate unique invite codes
+- `getGroupInvites()` - Fetch active invites for group
+- `deactivateInvite()` - Disable invite links
+- `acceptInvite()` - Join group via invite code
+
+**🎨 UI Components:**
+- InviteSection - Invite management for admins
+- Members section on group detail page
+- Admin badge display
+
+**🐛 Fixes Applied:**
+1. Fixed member user data fetching with explicit foreign key syntax
+2. Added Next.js 15 params await support for all dynamic routes
+3. Fixed invite acceptance errors (null current_uses, revalidatePath)
+4. Added null safety checks for member rendering
+
+**📊 Database Migrations:**
+- `20241218000000_add_invite_update_policy.sql`
+
+**📝 Notes:**
+- Invite system fully tested with multiple users
+- Network access working (tested on 192.168.1.3)
+- All Next.js 15 compatibility issues resolved
+- No manual SQL required for adding members anymore
 
 ---
 
