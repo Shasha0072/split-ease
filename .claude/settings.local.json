@@ -7,7 +7,18 @@
       "Bash(npm install:*)",
       "Bash(npm run dev:*)",
       "Bash(gh --version:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Project setup and configuration\n\n- Initialize Next.js 15 with TypeScript and Tailwind CSS\n- Set up Supabase integration (client, server, middleware)\n- Configure authentication middleware\n- Create basic project structure\n- Add environment variables configuration\n- Create landing page\n- Add project documentation (README.md, INIT.md)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git branch:*)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git pull:*)",
+      "Bash(gh pr create:*)",
+      "Bash(winget install:*)",
+      "Bash(powershell:*)",
+      "Bash(cat:*)"
     ]
   }
 }

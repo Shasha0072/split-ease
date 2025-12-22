@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar } from '@/components/ui/avatar'
 import { InviteSection } from '@/components/features/groups/invite-section'
+import { ExpenseMenu } from '@/components/features/expenses/expense-menu'
 import Link from 'next/link'
 
 export default async function GroupDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -262,49 +263,59 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {expenses.map((expense: any) => (
-                          <div
-                            key={expense.id}
-                            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-                          >
-                            <div className="flex items-center gap-3 flex-1">
-                              <div className="flex-shrink-0">
-                                <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center">
-                                  <span className="text-primary font-semibold">
-                                    ₹
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-900">{expense.description}</p>
-                                <div className="flex items-center gap-2 mt-1">
-                                  <Badge size="sm" variant="outline">{expense.category}</Badge>
-                                  <span className="text-xs text-gray-500">
-                                    {new Date(expense.date).toLocaleDateString()}
-                                  </span>
-                                </div>
-                                {expense.paidBy && (
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Avatar
-                                      src={expense.paidBy.avatar_url}
-                                      alt={expense.paidBy.name || expense.paidBy.email}
-                                      size="xs"
-                                    />
-                                    <span className="text-xs text-gray-600">
-                                      Paid by {expense.paidBy.name || expense.paidBy.email}
+                        {expenses.map((expense: any) => {
+                          const isCreator = expense.created_by === user.id
+                          const canEdit = isCreator || isAdmin
+
+                          return (
+                            <div
+                              key={expense.id}
+                              className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                            >
+                              <div className="flex items-center gap-3 flex-1">
+                                <div className="flex-shrink-0">
+                                  <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center">
+                                    <span className="text-primary font-semibold">
+                                      ₹
                                     </span>
                                   </div>
-                                )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-gray-900">{expense.description}</p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Badge size="sm" variant="outline">{expense.category}</Badge>
+                                    <span className="text-xs text-gray-500">
+                                      {new Date(expense.date).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  {expense.paidBy && (
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <Avatar
+                                        src={expense.paidBy.avatar_url}
+                                        alt={expense.paidBy.name || expense.paidBy.email}
+                                        size="xs"
+                                      />
+                                      <span className="text-xs text-gray-600">
+                                        Paid by {expense.paidBy.name || expense.paidBy.email}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-lg font-bold text-gray-900">
+                                    ₹{expense.amount.toFixed(2)}
+                                  </p>
+                                  <p className="text-xs text-gray-500">Equal split</p>
+                                </div>
                               </div>
-                              <div className="text-right">
-                                <p className="text-lg font-bold text-gray-900">
-                                  ₹{expense.amount.toFixed(2)}
-                                </p>
-                                <p className="text-xs text-gray-500">Equal split</p>
-                              </div>
+                              <ExpenseMenu
+                                expenseId={expense.id}
+                                groupId={id}
+                                isAuthorized={canEdit}
+                              />
                             </div>
-                          </div>
-                        ))}
+                          )
+                        })}
                       </div>
                     )}
                   </CardContent>
@@ -465,37 +476,51 @@ export default async function GroupDetailPage({ params }: { params: Promise<{ id
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {expenses.map((expense: any) => (
-                      <div
-                        key={expense.id}
-                        className="p-3 border border-gray-200 rounded-lg"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <p className="font-medium text-gray-900 text-sm">{expense.description}</p>
-                          <p className="text-base font-bold text-gray-900">
-                            ₹{expense.amount.toFixed(2)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge size="sm" variant="outline">{expense.category}</Badge>
-                          <span className="text-xs text-gray-500">
-                            {new Date(expense.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                        {expense.paidBy && (
-                          <div className="flex items-center gap-2 mt-2">
-                            <Avatar
-                              src={expense.paidBy.avatar_url}
-                              alt={expense.paidBy.name || expense.paidBy.email}
-                              size="xs"
-                            />
-                            <span className="text-xs text-gray-600">
-                              Paid by {expense.paidBy.name || expense.paidBy.email}
+                    {expenses.map((expense: any) => {
+                      const isCreator = expense.created_by === user.id
+                      const canEdit = isCreator || isAdmin
+
+                      return (
+                        <div
+                          key={expense.id}
+                          className="p-3 border border-gray-200 rounded-lg"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900 text-sm">{expense.description}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <p className="text-base font-bold text-gray-900">
+                                ₹{expense.amount.toFixed(2)}
+                              </p>
+                              <ExpenseMenu
+                                expenseId={expense.id}
+                                groupId={id}
+                                isAuthorized={canEdit}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge size="sm" variant="outline">{expense.category}</Badge>
+                            <span className="text-xs text-gray-500">
+                              {new Date(expense.date).toLocaleDateString()}
                             </span>
                           </div>
-                        )}
-                      </div>
-                    ))}
+                          {expense.paidBy && (
+                            <div className="flex items-center gap-2 mt-2">
+                              <Avatar
+                                src={expense.paidBy.avatar_url}
+                                alt={expense.paidBy.name || expense.paidBy.email}
+                                size="xs"
+                              />
+                              <span className="text-xs text-gray-600">
+                                Paid by {expense.paidBy.name || expense.paidBy.email}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </CardContent>

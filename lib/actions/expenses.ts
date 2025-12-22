@@ -269,3 +269,181 @@ export async function getGroupBalances(groupId: string) {
 
   return { balances, error: null }
 }
+
+export async function updateExpense(expenseId: string, formData: FormData) {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Not authenticated' }
+  }
+
+  // Get expense details
+  const { data: expense, error: expenseError } = await supabase
+    .from('expenses')
+    .select('id, group_id, created_by, amount, paid_by_user_id')
+    .eq('id', expenseId)
+    .eq('is_deleted', false)
+    .single()
+
+  if (expenseError || !expense) {
+    return { error: 'Expense not found' }
+  }
+
+  // Check authorization: creator OR admin
+  const isCreator = expense.created_by === user.id
+
+  const { data: membership } = await supabase
+    .from('group_members')
+    .select('role')
+    .eq('group_id', expense.group_id)
+    .eq('user_id', user.id)
+    .single()
+
+  const isAdmin = membership?.role === 'admin'
+
+  if (!isCreator && !isAdmin) {
+    return { error: 'Not authorized - Only creator or admin can edit' }
+  }
+
+  // Extract form data
+  const description = formData.get('description') as string
+  const amount = parseFloat(formData.get('amount') as string)
+  const category = formData.get('category') as string
+  const date = formData.get('date') as string
+
+  // Check if amount changed - if so, recalculate splits
+  const amountChanged = Math.abs(amount - expense.amount) > 0.01
+
+  if (amountChanged) {
+    // Get all group members for recalculation
+    const { data: members, error: membersError } = await supabase
+      .from('group_members')
+      .select('user_id')
+      .eq('group_id', expense.group_id)
+
+    if (membersError || !members || members.length === 0) {
+      return { error: 'Failed to get group members' }
+    }
+
+    // Calculate new split amount
+    const splitAmount = amount / members.length
+
+    // Delete old splits
+    const { error: deleteError } = await supabase
+      .from('expense_splits')
+      .delete()
+      .eq('expense_id', expenseId)
+
+    if (deleteError) {
+      return { error: deleteError.message }
+    }
+
+    // Create new splits
+    const splits = members.map((member) => ({
+      expense_id: expenseId,
+      user_id: member.user_id,
+      amount_owed: splitAmount,
+      amount_settled: member.user_id === expense.paid_by_user_id ? splitAmount : 0,
+      is_fully_settled: member.user_id === expense.paid_by_user_id,
+    }))
+
+    const { error: splitsError } = await supabase
+      .from('expense_splits')
+      .insert(splits)
+
+    if (splitsError) {
+      return { error: splitsError.message }
+    }
+  }
+
+  // Update expense
+  const { error: updateError } = await supabase
+    .from('expenses')
+    .update({
+      description,
+      amount,
+      category,
+      date: date || new Date().toISOString(),
+    })
+    .eq('id', expenseId)
+
+  if (updateError) {
+    return { error: updateError.message }
+  }
+
+  // Log to activity feed
+  await supabase.from('activity_feed').insert({
+    group_id: expense.group_id,
+    user_id: user.id,
+    action_type: 'expense_updated',
+    description: `${user.user_metadata?.name || user.email} updated expense: ${description}`,
+  })
+
+  revalidatePath(`/groups/${expense.group_id}`)
+  redirect(`/groups/${expense.group_id}`)
+}
+
+export async function deleteExpense(expenseId: string) {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Not authenticated' }
+  }
+
+  // Get expense details
+  const { data: expense, error: expenseError } = await supabase
+    .from('expenses')
+    .select('id, group_id, created_by, description')
+    .eq('id', expenseId)
+    .eq('is_deleted', false)
+    .single()
+
+  if (expenseError || !expense) {
+    return { error: 'Expense not found' }
+  }
+
+  // Check authorization: creator OR admin
+  const isCreator = expense.created_by === user.id
+
+  const { data: membership } = await supabase
+    .from('group_members')
+    .select('role')
+    .eq('group_id', expense.group_id)
+    .eq('user_id', user.id)
+    .single()
+
+  const isAdmin = membership?.role === 'admin'
+
+  if (!isCreator && !isAdmin) {
+    return { error: 'Not authorized - Only creator or admin can delete' }
+  }
+
+  // Soft delete: set is_deleted = true
+  const { error: deleteError } = await supabase
+    .from('expenses')
+    .update({ is_deleted: true })
+    .eq('id', expenseId)
+
+  if (deleteError) {
+    return { error: deleteError.message }
+  }
+
+  // Log to activity feed
+  await supabase.from('activity_feed').insert({
+    group_id: expense.group_id,
+    user_id: user.id,
+    action_type: 'expense_deleted',
+    description: `${user.user_metadata?.name || user.email} deleted expense: ${expense.description}`,
+  })
+
+  revalidatePath(`/groups/${expense.group_id}`)
+  return { error: null }
+}

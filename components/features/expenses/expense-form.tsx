@@ -1,24 +1,34 @@
 'use client'
 
 import { useState } from 'react'
-import { createExpense } from '@/lib/actions/expenses'
+import { createExpense, updateExpense } from '@/lib/actions/expenses'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert } from '@/components/ui/alert'
 
 interface ExpenseFormProps {
   groupId: string
+  expense?: {
+    id: string
+    description: string
+    amount: number
+    category: string
+    date: string
+  }
 }
 
-export function ExpenseForm({ groupId }: ExpenseFormProps) {
+export function ExpenseForm({ groupId, expense }: ExpenseFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const isEditing = !!expense
 
   async function handleSubmit(formData: FormData) {
     setLoading(true)
     setError(null)
 
-    const result = await createExpense(groupId, formData)
+    const result = isEditing
+      ? await updateExpense(expense.id, formData)
+      : await createExpense(groupId, formData)
 
     if (result?.error) {
       setError(result.error)
@@ -53,6 +63,7 @@ export function ExpenseForm({ groupId }: ExpenseFormProps) {
         type="text"
         label="Description"
         placeholder="e.g., Dinner at restaurant"
+        defaultValue={expense?.description}
         required
         disabled={loading}
         autoFocus
@@ -66,6 +77,7 @@ export function ExpenseForm({ groupId }: ExpenseFormProps) {
         min="0.01"
         label="Amount (₹)"
         placeholder="0.00"
+        defaultValue={expense?.amount}
         required
         disabled={loading}
       />
@@ -77,6 +89,7 @@ export function ExpenseForm({ groupId }: ExpenseFormProps) {
         <select
           id="category"
           name="category"
+          defaultValue={expense?.category}
           required
           disabled={loading}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
@@ -95,7 +108,7 @@ export function ExpenseForm({ groupId }: ExpenseFormProps) {
         name="date"
         type="date"
         label="Date"
-        defaultValue={new Date().toISOString().split('T')[0]}
+        defaultValue={expense?.date || new Date().toISOString().split('T')[0]}
         required
         disabled={loading}
       />
@@ -130,7 +143,7 @@ export function ExpenseForm({ groupId }: ExpenseFormProps) {
         disabled={loading}
         isLoading={loading}
       >
-        Add Expense
+        {isEditing ? 'Update Expense' : 'Add Expense'}
       </Button>
     </form>
   )
